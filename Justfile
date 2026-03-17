@@ -171,6 +171,7 @@ rootfs-include-container container_image=default_image image=default_image:
     set -euo pipefail
     CMD="set -xeuo pipefail
     mkdir -p /var/lib/containers/storage
+    mkdir -p /usr/etc/pki/containers
     cp /etc/pki/containers/secureblue-2025.pub /usr/etc/pki/containers/secureblue-2025.pub
     cp /etc/pki/containers/secureblue.pub /usr//etc/pki/containers/secureblue.pub
     podman pull {{ container_image || image }}
