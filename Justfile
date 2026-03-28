@@ -273,24 +273,6 @@ rootfs-clean-sysroot:
     fi'
     chroot "$CMD"
 
-# Fix SELinux Permissions
-rootfs-selinux-fix image=default_image:
-    #!/usr/bin/env bash
-    {{ _ci_grouping }}
-    set -euo pipefail
-    CMD='set -xeuo pipefail
-    cd /app/{{ rootfs }}
-    setfiles -F -r . /etc/selinux/targeted/contexts/files/file_contexts .
-    chcon --user=system_u --recursive .'
-    {{ PODMAN }} run --rm -it \
-        --volume {{ git_root }}:/app \
-        --workdir "/app" \
-        --security-opt label=disable \
-        --privileged \
-        {{ image }} \
-        /usr/bin/bash -c "$CMD"
-    rmdir {{ rootfs }}/app || true
-
 # Compress rootfs into a compressed image
 squash fs_type="squashfs":
     #!/usr/bin/env bash
@@ -443,7 +425,6 @@ iso:
     (rootfs-include-container container_image image) \
     (hook-post-rootfs HOOK_post_rootfs) \
     rootfs-clean-sysroot \
-    (rootfs-selinux-fix image) \
     (ci-delete-image image) \
     (squash compression) \
     (iso-organize extra_kargs) \
