@@ -37,7 +37,7 @@ just := just_executable() + " -f " + source_file()
 git_root := source_dir()
 
 [private]
-builder_image := if builder_distro == "fedora" { "quay.io/fedora/fedora:44" } else if builder_distro == "centos" { "ghcr.io/hanthor/centos-anaconda-builder:main" } else if builder_distro == "almalinux-kitten" { "quay.io/almalinuxorg/almalinux:10-kitten" } else if builder_distro == "almalinux" { "quay.io/almalinuxorg/almalinux:10" } else { error("Unsupported builder distribution: " + builder_distro + ". Supported: fedora, centos, almalinux") }
+builder_image := if builder_distro == "fedora" { "quay.io/fedora/fedora:45" } else if builder_distro == "centos" { "ghcr.io/hanthor/centos-anaconda-builder:main" } else if builder_distro == "almalinux-kitten" { "quay.io/almalinuxorg/almalinux:10-kitten" } else if builder_distro == "almalinux" { "quay.io/almalinuxorg/almalinux:10" } else { error("Unsupported builder distribution: " + builder_distro + ". Supported: fedora, centos, almalinux") }
 
 
 [private]
@@ -174,7 +174,7 @@ rootfs-include-container container_image=default_image image=default_image:
     mkdir -p /usr/etc/pki/containers
     cp /etc/pki/containers/secureblue-2025.pub /usr/etc/pki/containers/secureblue-2025.pub
     cp /etc/pki/containers/secureblue.pub /usr/etc/pki/containers/secureblue.pub
-    podman pull {{ container_image || image }}
+    podman pull {{ if container_image == '' { image } else { container_image } }}
     dnf install -y fuse-overlayfs"
     chroot "$CMD"
 
@@ -467,7 +467,7 @@ iso:
     echo "flatpaks_file      := {{ if flatpaks_file =~ '(^$|^(?i)\bnone\b$)' { '' } else { canonicalize(flatpaks_file) } }}"
     echo "compression        := {{ compression }}"
     echo "extra_kargs        := {{ extra_kargs }}"
-    echo "container_image    := {{ container_image || image }}"
+    echo "container_image    := {{ if container_image == '' { image } else { container_image } }}"
     echo "polkit             := {{ polkit }}"
     echo "CI                 := {{ env('CI', '') }}"
     echo "ARCH               := {{ arch }}"
