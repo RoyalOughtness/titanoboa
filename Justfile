@@ -1,5 +1,5 @@
 set unstable := true
-PODMAN := which("podman") || require("podman-remote")
+PODMAN := `command -v podman || command -v podman-remote`
 workdir := env("TITANOBOA_WORKDIR", "work")
 isoroot := env("TITANOBOA_ISO_ROOT", "work/iso-root")
 rootfs := workdir/"rootfs"
